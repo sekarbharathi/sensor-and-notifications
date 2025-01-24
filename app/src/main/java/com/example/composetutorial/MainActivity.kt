@@ -53,6 +53,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 
+//navigation between MainScreen and SettingsScreen
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,21 +79,17 @@ data class Message(val author: String, val body: String)
 fun MainScreen(navController: androidx.navigation.NavController) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopBar(onSettingsClicked = {
-            // Navigate to settings screen and clear the back stack
             navController.navigate("settingsScreen") {
-                popUpTo("mainScreen") { inclusive = true }
+                popUpTo("mainScreen") { inclusive = false }
                 launchSingleTop = true
             }
         })
         Conversation(SampleData.conversationSample)
     }
-
-    // Handle the back gesture to close the app from MainScreen
-    BackHandler {
-        // Exit the app or return to the home screen
-        android.os.Process.killProcess(android.os.Process.myPid()) // This forces the app to close
-    }
 }
+
+
+//TOP bar and icons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +99,7 @@ fun TopBar(onSettingsClicked: () -> Unit, isBackButton: Boolean = false) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-        title = { Text(text = if (isBackButton) "Settings" else "Messages") },
+        title = { },
         navigationIcon = {
             if (isBackButton) {
                 IconButton(
@@ -115,7 +113,7 @@ fun TopBar(onSettingsClicked: () -> Unit, isBackButton: Boolean = false) {
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = "Back Icon"
                     )
                 }
             }
@@ -135,7 +133,7 @@ fun TopBar(onSettingsClicked: () -> Unit, isBackButton: Boolean = false) {
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
-                        contentDescription = "Settings"
+                        contentDescription = "Settings Icon"
                     )
                 }
             }
@@ -197,11 +195,10 @@ fun Conversation(messages: List<Message>) {
     }
 }
 
+//Settings screen and navigation to main screen
+
 @Composable
 fun SettingsScreen(navController: androidx.navigation.NavController) {
-    var userName by remember { mutableStateOf("Lexi") }
-
-    // Handle back gesture to navigate to the Main Screen
     BackHandler {
         navController.navigate("mainScreen") {
             popUpTo("mainScreen") { inclusive = true }
@@ -209,18 +206,14 @@ fun SettingsScreen(navController: androidx.navigation.NavController) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // TopBar with Back Button
         TopBar(
             onSettingsClicked = {
-                // When navigating back to MainScreen, prevent circular navigation
                 navController.navigate("mainScreen") {
-                    popUpTo("mainScreen") { inclusive = true }
+                    popUpTo("mainScreen") { inclusive = true } // Clear stack
                 }
             },
             isBackButton = true
         )
-
-        // Profile Section
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -242,6 +235,7 @@ fun SettingsScreen(navController: androidx.navigation.NavController) {
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
+                    var userName by remember { mutableStateOf("Lexi") }
                     Text(
                         text = "User Name",
                         style = MaterialTheme.typography.titleMedium,
@@ -264,7 +258,6 @@ fun SettingsScreen(navController: androidx.navigation.NavController) {
     }
 }
 
-
 @Preview
 @Composable
 fun PreviewMainScreen() {
@@ -275,12 +268,4 @@ fun PreviewMainScreen() {
     }
 }
 
-@Preview
-@Composable
-fun PreviewSettingsScreen() {
-    ComposeTutorialTheme {
-        Surface {
-            SettingsScreen(navController = rememberNavController())
-        }
-    }
-}
+
