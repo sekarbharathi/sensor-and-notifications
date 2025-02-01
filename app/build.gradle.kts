@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -51,6 +52,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.core.android)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.animation.core.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -58,4 +62,21 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.coil.compose)
+    implementation (libs.coil.compose) // For Coil integration with Jetpack Compose
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.coil.compose)
+    implementation (libs.androidx.room.runtime)
+    ksp (libs.androidx.room.compiler)
+    // If you need Kotlin Symbol Processing (KSP)
+    implementation(libs.androidx.room.ktx)
+
+// Compose UI dependencies
+    implementation(libs.ui.tooling.preview)
+
+    // Lifecycle components
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
+    implementation (libs.androidx.lifecycle.runtime.ktx)
+    implementation (libs.androidx.datastore.preferences)
 }
+
