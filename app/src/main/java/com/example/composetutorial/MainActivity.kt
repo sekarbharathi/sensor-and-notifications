@@ -114,7 +114,7 @@ class UserPreferences(private val context: Context) {
 class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val userPreferences = UserPreferences(application)
 
-    private val _userName = MutableStateFlow<String>("")
+    private val _userName = MutableStateFlow<String>("") // Start with an empty state.
     val userName: StateFlow<String> = _userName
 
     private val _profileImageUri = MutableStateFlow<String?>(null)
@@ -122,9 +122,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-
+            // Load stored username and profile image when the ViewModel starts.
             userPreferences.userNameFlow.collect { storedName ->
-
+                // Only update if the value is not empty
                 if (_userName.value.isEmpty()) {
                     _userName.value = storedName
                 }
@@ -139,19 +139,22 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateUsername(newName: String) {
         viewModelScope.launch {
+            // Save the new name to DataStore
             userPreferences.saveUserName(newName)
+            // Force immediate update of the StateFlow with the new name
             _userName.value = newName
         }
     }
 
     fun updateProfileImage(uri: String) {
         viewModelScope.launch {
+            // Save the new profile image URI to DataStore
             userPreferences.saveProfileImage(uri)
+            // Update the profile image URI in the state
             _profileImageUri.value = uri
         }
     }
 }
-
 
 
 // MainActivity & Navigation
@@ -196,10 +199,12 @@ fun MainScreen(navController: NavController, userViewModel: UserViewModel) {
                 }
             })
 
+            // Conditionally render UI once user data is available
             if (userName.isNotEmpty()) {
+                // Wait until data is loaded before displaying the name
                 Conversation(SampleData.conversationSample, userName, profileImageUri)
             } else {
-
+                // Show CircularProgressIndicator while loading user data
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
